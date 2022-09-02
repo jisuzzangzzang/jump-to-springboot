@@ -39,20 +39,21 @@ public class Answer {
 }
 
 // @ManyToOne
-/*
-	  - 답변은 하나의 질문에 여러개가 달릴 수 있는 구조
-	    따라서 답변은 Many, 질문은 One
-	  - @ManyToOne (= N:1)
-	  - Answer 엔티티의 question 속성과 Question 엔티티가 서로 연결됨
-	    (실제 데이터베이스에서는 ForeignKey 관계 생성)
-	  - @ManyToOne 어노테이션은 부모 자식 관계 구조에서 사용
-	    (여기서 부모는 Question, 자식은 Answer)
-*/
+   /*
+    - 답변은 하나의 질문에 여러개가 달릴 수 있는 구조
+      따라서 답변은 Many, 질문은 One
+    - @ManyToOne (= N:1)
+    - Answer 엔티티의 question 속성과 Question 엔티티가 서로 연결됨
+      (실제 데이터베이스에서는 ForeignKey 관계 생성)
+    - @ManyToOne 어노테이션은 부모 자식 관계 구조에서 사용
+      (여기서 부모는 Question, 자식은 Answer)
+   */
+
 
 // Question 엔티티에서 Answer 엔티티를 참조하는 방법
-/*
-	  - 1:N의 관계
-	  - @OneToMany 어노테이션 사용
-	  - Question 하나에 Answer는 여러개이므로
-	   추가할 답변의 속성은 List 형태로 구성
-*/
+   /*
+    - 1:N의 관계
+    - @OneToMany 어노테이션 사용
+	- Question 하나에 Answer는 여러개이므로
+	  추가할 답변의 속성은 List 형태로 구성
+   */

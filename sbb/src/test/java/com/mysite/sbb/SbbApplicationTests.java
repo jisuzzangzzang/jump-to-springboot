@@ -50,6 +50,7 @@ class SbbApplicationTests {
 */		
 		
 		
+		
 		// 테이블에 저장된 모든 데이터 조회 (findAll, assertEquals)
 /*		
 		List<Question> all = this.questionRepository.findAll();
@@ -62,6 +63,7 @@ class SbbApplicationTests {
 */
 		
 		
+		
 		// Question의 엔티티의 Id값으로 데이터를 조회 (findById)
 /*		
 		Optional<Question> oq = this.questionRepository.findById(1);
@@ -72,11 +74,13 @@ class SbbApplicationTests {
 			assertEquals("sbb가 무엇인가요?", q.getSubject());
 */
 
+		
 		// Question 엔티티의 subject 값으로 데이터를 조회 (findBySubject)
 /*
 		Question q = this.questionRepository.findBySubject("sbb가 무엇인가요?");
 		assertEquals(1, q.getId());
 */
+		
 		
 		// 제목과 내용을 함께 조회 (findBySubjectAndContent)
 /*		
@@ -84,16 +88,17 @@ class SbbApplicationTests {
 		assertEquals(1, q.getId());
 */
 		
+		
 		// 제목에 특정 문자열이 포함되어 있는 데이터 조회 (findBySubjectLike)
 /*		
 		List<Question> qList = this.questionRepository.findBySubjectLike("sbb%");
 																	   // sbb%: sbb로 시작하는 문자열
 																	   // %sbb: sbb로 끝나는 문자열
 																	   // %sbb%: sbb를 포함하는 문자열
-		
 		Question q = qList.get(0);
 		assertEquals("sbb가 무엇인가요?", q.getSubject());
 */
+		
 		
 		
 		// 질문 데이터 수정
@@ -104,6 +109,7 @@ class SbbApplicationTests {
 		q.setSubject("수정된 제목"); // 수정된 제목이라는 값으로 수정
 		this.questionRepository.save(q); // 변경된 데이터를 저장하기 위한 save 메소드
 */		
+		
 		
 		// 질문 데이터 삭제
 /*		
@@ -116,6 +122,7 @@ class SbbApplicationTests {
         assertEquals(1, this.questionRepository.count()); // 삭제 후 데이터 건수가 1이 맞는지 확인
 */
         
+		
         // 답변 데이터 생성 후 저장
 /*		
 		Optional<Question> oq = this.questionRepository.findById(2); // 답변 데이터 생성 위한 질문 데이터 id가 2인 질문 가져옴
@@ -129,6 +136,7 @@ class SbbApplicationTests {
 		this.answerRepository.save(a);
 */
 		
+		
 		// Id값을 이용해 데이터를 조회
 /*
 		Optional<Answer> oa = this.answerRepository.findById(1);
@@ -137,6 +145,7 @@ class SbbApplicationTests {
 		assertEquals(2, a.getQuestion().getId());
 */
 		
+		
 		// 답변에 연결된 질문 찾기 vs 질문에 달린 답변 찾기
 /*		
 		- 필요한 시점에 데이터를 가져오는 방식(Lazy)
@@ -144,14 +153,15 @@ class SbbApplicationTests {
 		- @OneToMany, @ManyToOne 어노테이션의 옵션으로 fetch=FetchType.LAZY 또는 fetch=FetchType.EAGER 처럼
 		  가져오는 방식을 설정할 수 있는데 이 프로젝트에서는 항상 디폴트 값을 사용할 것임
 */		  
-		Optional<Question> oq = this.questionRepository.findById(2); // DB세션이 끊어져서 오류 발생
-		assertTrue(oq.isPresent());
-		Question q = oq.get();
 		
-		List<Answer> answerList = q.getAnswerList(); // 이 때 답변 데이터 리스트를 가져옴
-		
-		assertEquals(1,  answerList.size());
-		assertEquals("네 자동으로 생성됩니다.", answerList.get(0).getContent());
+			Optional<Question> oq = this.questionRepository.findById(2); // DB세션이 끊어져서 오류 발생
+			assertTrue(oq.isPresent());
+			Question q = oq.get();
+			
+			List<Answer> answerList = q.getAnswerList(); // 이 때 답변 데이터 리스트를 가져옴
+			
+			assertEquals(1,  answerList.size());
+			assertEquals("네 자동으로 생성됩니다.", answerList.get(0).getContent());
 	}
 }
 
@@ -165,6 +175,7 @@ class SbbApplicationTests {
 	- 테스트 코드의 경우, 생성자를 통한 객체의 주입이 불가능
 	- 테스트 코드 작성시에만 @Autowired 사용, 실제 코드 작성시 생성자를 통한 객체 주입 방식 사용
 */
+
 
 // JUnit
 /*
