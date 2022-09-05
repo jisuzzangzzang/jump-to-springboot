@@ -1,9 +1,8 @@
 package com.mysite.sbb.question;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mysite.sbb.answer.AnswerForm;
 
@@ -29,9 +29,13 @@ public class QuestionController {
     											   // 생성자 방식으로 DI 규칙에 의해 주입
     
     @RequestMapping("/list")			   // URL 맵핑 시 value 매개변수는 생략 가능
-    public String list(Model model) {
-    	List<Question> questionList = this.questionService.getList();
-        model.addAttribute("questionList", questionList); // 모델 객체에 값을 담아줌
+    public String list(Model model, @RequestParam(value="page", defaultValue="0") int page) {
+    							 // http://localhost:8080/question/list?page=0 처럼 GET 방식으로 요청된 URL에서
+    						     // 페이지 값을 가져오기 위해 매개변수가 list 메소드에 추가됨
+    							 // URL에 페이지 파라미터 page가 전달되지 않은 경우 디폴트 값으로 0이 되도록 설정
+    							 // * 스프링 부트의 페이징은 첫 페이지 번호가 1이 아닌 0
+    	Page<Question> paging = this.questionService.getList(page);
+        model.addAttribute("paging", paging); // 모델 객체에 값을 담아줌
    	    // Model 객체는 따로 생성할 필요 없이 컨트롤러 메소드의 매개변수로 지정하기만 하면, 자동으로 Model 객체를 생성함
         return "question_list"; // 템플릿에서 값을 사용
     }

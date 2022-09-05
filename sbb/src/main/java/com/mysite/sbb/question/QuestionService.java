@@ -1,9 +1,14 @@
 package com.mysite.sbb.question;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.mysite.sbb.DataNotFoundException;
@@ -16,8 +21,19 @@ public class QuestionService {
 	
 	private final QuestionRepository questionRepository; // 생성자 방식으로 DI 규칙에 의해 주입
 	
+	/*
 	public List<Question> getList() {	// 질문 목록 조회하여 리턴하는 getList 메소드 추가
 		return this.questionRepository.findAll();
+	}
+	*/
+	
+	public Page<Question> getList(int page) { // 정수 타입의 페이지 번호를 입력 받아 해당 페이지의 질문 목록 리턴
+		List<Sort.Order> sorts = new ArrayList<>();
+		sorts.add(Sort.Order.desc("createDate")); // 가장 최근에 작성한 게시물이 가장 먼저 보이게
+		Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts)); // page는 조회할 번호의 번호, 10은 한 페이지에 보여줄 게시물의 갯수
+																	  // 3번째 파라미터로 Sort 객체 전달 -> 역순으로 조회
+																	  // 만약 작성일시 외 추가로 정렬조건이 필요한 경우 sorts 리스트에 추가
+		return this.questionRepository.findAll(pageable);
 	}
 	
 	public Question getQuestion(Integer id) {

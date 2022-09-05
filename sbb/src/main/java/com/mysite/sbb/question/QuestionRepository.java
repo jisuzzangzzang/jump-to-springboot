@@ -2,6 +2,8 @@ package com.mysite.sbb.question;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface QuestionRepository extends JpaRepository<Question,Integer> {
@@ -11,6 +13,7 @@ public interface QuestionRepository extends JpaRepository<Question,Integer> {
 	Question findBySubject(String subject); // findBySubject 메소드를 이용하기 위해 작성
 	Question findBySubjectAndContent(String subject, String content); // findBySubjectAndContent 메소드를 이용하기 위해 작성
 	List<Question> findBySubjectLike(String subject); // 리스트 findBySubjectLike 메소드를 이용하기 위해 작성
+	Page<Question> findAll(Pageable pageable); // Pageable 객체를 입력으로 받아 Page<Quesiton> 타입 객체를 리턴하는 findAll 메소드
 }
 
 
