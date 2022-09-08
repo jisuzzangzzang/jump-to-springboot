@@ -1,17 +1,20 @@
 package com.mysite.sbb.answer;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import org.springframework.data.annotation.CreatedDate;
 
 import com.mysite.sbb.question.Question;
+import com.mysite.sbb.user.SiteUser;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +39,15 @@ public class Answer {
 							   // answer.getQuestion().getSubject()처럼 접근 가능
 							   // 하지만 속성만 추가 X, 연결된 속성이라는 것을 명시적으로 표시해줘야함
 							   // @ManyToOne 어노테이션 추가
+	
+	@ManyToOne
+	private SiteUser author;
+	
+	private LocalDateTime modifyDate; // 답변의 수정 일시 속성 추가
+	
+	@ManyToMany // 속성을 생성하면 새로운 테이블을 생성하여 데이터를 관리
+				// 테이블에는 서로 연관된 엔티티의 고유번호(id) 2개가 프라이머리 키로 되어 있기 때문에 다대다(N:N) 관계가 성립
+	Set<SiteUser> voter;
 }
 
 // @ManyToOne

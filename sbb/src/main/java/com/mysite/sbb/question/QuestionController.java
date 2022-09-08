@@ -1,8 +1,12 @@
 package com.mysite.sbb.question;
 
+import java.security.Principal;
+
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,8 +15,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.mysite.sbb.answer.AnswerForm;
+import com.mysite.sbb.user.SiteUser;
+import com.mysite.sbb.user.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +34,8 @@ public class QuestionController {
 	
     private final QuestionService questionService; // 레포지토리 대신 서비스를 사용하도록 수정함
     											   // 생성자 방식으로 DI 규칙에 의해 주입
+    
+    private final UserService userService;
     
     @RequestMapping("/list")			   // URL 맵핑 시 value 매개변수는 생략 가능
     public String list(Model model, @RequestParam(value="page", defaultValue="0") int page) {
@@ -49,13 +58,15 @@ public class QuestionController {
           
     }
     
+    @PreAuthorize("isAuthenticated()") // 로그인이 필요한 메소드에 어노테이션 적용
     @GetMapping("/create") // 질문 등록하기
     public String questionCreate(QuestionForm questionForm) {
     	return "question_form";
     }
     
+    @PreAuthorize("isAuthenticated()")  // 로그인이 필요한 메소드에 어노테이션 적용
     @PostMapping("/create")
-    public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult) {
+    public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult, Principal principal) {
     	// subject, content 대신 QuestionForm 객체로 변경
     	// subject, content 항목을 지닌 폼 전송 -> 자동으로 바인딩
     	if (bindingResult.hasErrors()) {
@@ -67,8 +78,62 @@ public class QuestionController {
     	       // 이 때, 질문 등록 템플릿에서 필드 항목으로 사용했던 subject, content의 이름과 동일하게 해야함
     		   // bindingResult.hasErrors() 호출 -> 오류가 있는 경우 폼을 작성하는 화면 렌더링, 
     	       // 								   오류가 없으면 질문 등록 진행
-    	this.questionService.create(questionForm.getSubject(), questionForm.getContent());
+    	SiteUser siteUser = this.userService.getUser(principal.getName());
+    	this.questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser);
     	return "redirect:/question/list"; // 질문 저장 후 질문 목록으로 이동
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/modify/{id}")
+    public String questionModify(QuestionForm questionForm, @PathVariable("id") Integer id, Principal principal) {
+    	Question question = this.questionService.getQuestion(id);
+    	
+    	if(!question.getAuthor().getUsername().equals(principal.getName())) { // 로그인한 사용자와 질문의 작성자 동일하지 않으면
+    		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다."); // 오류 발생, 출력
+    	}
+    	questionForm.setSubject(question.getSubject()); // 수정할 질문과 내용을 화면에 보여주기 위해 객체에 값을 담아 템플릿으로 전달
+    	questionForm.setContent(question.getContent()); // 이 과정이 없으면 화면에 제목, 내용의 값이 없어 비워져보인다.
+    	return "question_form";
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/modify/{id}")
+    public String questionModify(@Valid QuestionForm questionForm, BindingResult bindingResult, Principal principal,
+    							 @PathVariable("id") Integer id) { // questionForm의 데이터 검증
+    	if(bindingResult.hasErrors()) {
+    		return "question_form";
+    	}
+    	Question question = this.questionService.getQuestion(id);
+    	if (!question.getAuthor().getUsername().equals(principal.getName())) { // 로그인한 사용자와 질문의 작성자 동일 검증
+    		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
+    	}
+    	this.questionService.modify(question, questionForm.getSubject(), questionForm.getContent());
+    	// QuestionService에서 작성한 modify 메소드 호출 -> 질문 데이터 수정
+    	return String.format("redirect:/question/detail/%s", id); // 수정 완료 시 질문 상세 화면을 다시 호출
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/delete/{id}") // URL로 전달받은 id값을 사용
+    public String questionDelete(Principal principal, @PathVariable("id") Integer id) { // 로그인한 사용자와 질문 작성자가 동일할 경우
+    																				    // 서비스의 delete 메소드로 질문을 삭제
+    	Question question = this.questionService.getQuestion(id); // Question 데이터 조회 후 
+    	
+    	if (!question.getAuthor().getUsername().equals(principal.getName())) {
+    		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
+    	}
+    	
+    	this.questionService.delete(question); // 삭제 후 질문 목록 화면으로 돌아갈 수 있도록 루트 페이지로 리다이렉트
+    	return "redirect:/";
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/vote/{id}")
+    public String quesitonVote(Principal principal, @PathVariable("id") Integer id) {
+    											 // @PathVariable 적용 -> 추천은 로그인 한 사람만 가능해야하므로
+    	Question question = this.questionService.getQuestion(id);
+    	SiteUser siteUser = this.userService.getUser(principal.getName());
+    	this.questionService.vote(question, siteUser); // 추천인 호출하여 추천인을 저장
+    	return String.format("redirect:/question/detail/%s", id); // 오류가 없으면 질문 상세화면으로 리다이렉트
     }
     
 }

@@ -27,6 +27,7 @@ package com.mysite.sbb.question;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -34,9 +35,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.mysite.sbb.answer.Answer;
+import com.mysite.sbb.user.SiteUser;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -64,6 +68,14 @@ public class Question {
 	// 질문에서 답변을 참조하려면 question.getAnswerList() 호출
 	// mappedBy : 참조 엔티티의 속성명 의미
 	// 즉, Answer 엔티티에서 Question 엔티티를 참조한 속성명 question을 mappedBy에 전달
+	
+	@ManyToOne // 여러개의 질문이 한 명의 사용자에게 작성될 수 있으므로, @ManyToOne 관계 성립
+	private SiteUser author;
+	
+	private LocalDateTime modifyDate; // 질문의 수정 일시 속성 추가
+	
+	@ManyToMany	// 질문과 추천인은 부모 자식관계가 아니고 대등한 관계기 때문에 @ManyToMany 어노테이션 사용
+	Set<SiteUser> voter; // 추천인은 중복되면 안되기때문에 List가 아닌 Set으로 설정
 
 }
 

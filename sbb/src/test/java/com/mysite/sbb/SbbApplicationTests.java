@@ -30,7 +30,7 @@ class SbbApplicationTests {
 		for(int i=1; i<=300; i++) {	// 총 300개의 데이터를 생성하는 테스트 케이스 작성
 			String subject = String.format("테스트 데이터 입니다:[%03d]", i);
 			String content = "내용 없음";
-			this.questionService.create(subject, content);
+			this.questionService.create(subject, content, null);
 		}
 	}
 }

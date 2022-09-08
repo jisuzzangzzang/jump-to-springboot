@@ -143,3 +143,45 @@ public class MainController {
    · @Pattern : 정규식으로 검증
    · 보다 많은 기능은 다음 URL 참고(https://beanvalidation.org/)
    */
+
+
+// 403 Forbidden
+   /*
+   - 스프링 시큐리티 적용시 CSRF 기능 동작
+   - CSRF(cross site request forgery)
+     · 웹 사이트 취약점 공격을 방지하기 위해 사용하는 기술
+     · 스프링 시큐리티가 CSRF 토큰 값을 세션을 통해 발행하고 웹 페이지에서는 폼 전송시에 해당 토큰을 함께 전송하여
+       실제 웹 페이지에서 작성된 데이터가 전달되는지를 검증하는 기술
+   */
+
+
+// 회원 정보를 위한 엔티티
+   /*
+	- username : 사용자 이름 (ID)
+	- password : 사용자 비밀번호
+	- email : 이메일
+   */
+
+
+// 답변에 작성자 저장하기
+   /*
+	- 로그인한 사용자에 대한 정보를 알기 위해서는 스프링 시큐리티가 제공하는 Principal 객체 사용
+	- createAnswer 메소드에 principal 객체를 매개변수로 지정
+	- principal.getName() 호출 시 현재 로그인한 사용자의 사용자명(사용자ID) 알 수 있음
+    */
+
+
+// 로그인이 필요한 메소드
+   /*
+	- 로그아웃 상태에서 질문 또는 답변 등록하면 서버 오류 (500 오류) 발생
+	- principal 객체가 null 값이라 발생한 오류 (로그인을 해야만 생성되는 객체)
+	  · 해결방법 : principal 객체를 사용하는 메소드에 @PreAuthorize("isAuthenticated()") 어노테이션 사용
+				 -> 로그인이 필요한 메소드
+                 만약, @PreAuthorize("isAuthenticated()") 어노테이션 적용 -> 로그아웃 상태에서 호출되면 로그인 페이지로 이동
+    */
+
+
+// Specification (여러 테이블에서 데이터를 검색 해야할 때 JPA가 제공하는 인터페이스)
+   /*
+    - https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#specifications
+    */
