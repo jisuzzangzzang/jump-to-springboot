@@ -23,7 +23,7 @@ public class MainController {
 
 
 // ORM (개발자가 쿼리를 직접 작성하지 않아도 데이터베이스의 데이터 처리 가능)
-/*
+   /*
    - 쿼리 작성 시
    insert into question (subject, content) values ('안녕하세요', '가입 인사드립니다^^');
    insert into question (subject, content) values ('질문 있습니다', 'ORM이 궁금합니다^^');
@@ -43,32 +43,32 @@ public class MainController {
   	 · 데이터 베이스 종류에 상관 없이 일관된 코드 유지 가능 (유지·보수 편리)
      · 내부에서 안전한 SQL 쿼리를 자동으로 생성해주므로 개발자가 달라도 통일된 쿼리 작성 가능
      · 오류 발생률 줄일 수 있음
-*/
+   */
 
 
 // JPA (Java Persistence API를 사용하여 데이터베이스를 처리)
-/*
+   /*
    - 자바 진영에서 ORM (Object-Relational Mapping)의 기술 표준으로 사용하는 인터페이스 모음
    - 인터페이스이므로, 구현하는 실제 클래스가 필요함
    - 대표적으로는 하이버네이트(Hibernate)
-*/
+   */
 
 
 // Root URL
-/*
+   /*
    - http://localhost:8080 처럼 도메인 명과 포트 뒤에 아무것도 붙이지 않은 URL
-*/
+   */
 
 
 // redirect
-/*
+   /*
    - redirect:<URL> : URL로 리다이렉트 (리다이렉트는 완전히 새로운 URL로 요청됨)
    - forward:<URL> : URL로 포워드 (포워드는 기존 요청 값들이 유지된 상태로 URL이 전환됨)
-*/     
+   */     
 
 
 // templates > question_list.html (+주석 작성시 오류 발생으로 여기에 작성함)
-/*
+   /*
    - th:each="question : ${questionList}" (타임리프 템플릿 엔진)
    - QuestionController의 list 메소드에서 조회한 질문 목록 데이터를
 	  "questionList"라는 이름으로 Model 객체에 저장
@@ -76,11 +76,11 @@ public class MainController {
    - <tr>..<tr> 엘리먼트를 questionList의 갯수만큼 반복하여 출력하는 역할.
      questionList에 저장된 데이터를 하나씩 꺼내 question 객체에 대입 -> 반복구간 내에서 사용 가능
      (ex. Java for each문)
-*/
+   */
 
 
 // 자주 사용하는 타임리프의 속성
-/*
+   /*
    1. 분기문 속성
       - question 객체가 null이 아닌 경우 해당 엘리먼트 표시
 	  - th:if="${question != null}"
@@ -107,7 +107,7 @@ public class MainController {
         <td>[[${question.subject}]]</td>
         <td>[[${question.createDate}]]</td>
         </tr>  	 
-*/
+   */
 
 
 // 질문 상세 링크 추가하기
@@ -185,3 +185,44 @@ public class MainController {
    /*
     - https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#specifications
     */
+
+
+// SBB 추가 기능
+   /*
+   - 답변 페이징과 정렬
+	 · 하나의 질문에 무수히 많은 답변 달릴 수 있는 구조. 즉, 답변의 페이징 필요
+	 · 답변을 보여줄 때에도 최신순, 추천순 등으로 정렬하여 보여줄 수 있는 기능 필요
+	 · 질문 답변 사이트인 스택 오버 플로우(stackoverflow.com)나 레딧(reddit.com)을 보아도 추천수가 많은 답변이 먼저 보임
+	
+   - 댓글
+	 · 질문 또는 답변에 댓글을 달 수 있는 기능 구현
+	 · Comment 라는 엔티티 생성, Question, Answer 엔티티와 연결하면 쉽게 구현
+	
+   - 카테고리
+	 · '질문답변' 이라는 하나의 카테고리로만 구성되있지만 여기에 '강좌'나 '자유게시판'과 같은 게시판 추가로 생성
+	 · 이런 경우 Question 엔티티에 Category 엔티티 추가하여 게시판 분류
+	
+   - 비밀번호 찾기와 변경
+	 · 현재 사용자가 비밀번호를 분실했을 때 조치할 수 있는 방법이 없음
+	 · 비밀번호 분실 시 임시 비밀번호를 가입할 때 등록한 이메일 주소로 발송할 수 있는 방법 구현
+	 · 비밀번호 변경 프로그램 필요
+	 · 로그인 후 기존 비밀번호와 새 비밀번호를 입력받아 비밀번호를 변경할 수 있는 프로그램 만들어보기
+	
+   - 프로필
+	 · 로그인 한 사용자의 프로필 화면 만들어보기
+	 · 이 화면에는 사용자에 대한 기본 정보와 작성한 질문, 답변, 댓글 확인할 수 있도록 하면 좋음
+	
+   - 최근 답변 / 최근 댓글
+	 · 현재 SBB는 질문 위주로 목록이 보여짐
+	 · 최근 답변과 최근 댓글을 확인할 수 있는 기능 추가해보기
+	
+   - 조회 수
+	 · SBB는 답변 수를 표시하고 있지만 조회 수는 표시하지 않는다. 조회 수 표시해보기
+	
+   - 소셜 로그인
+	 · 구글이나 페이스북, 트위터 등을 경유하여 로그인하는 소셜 로그인 기능 구현
+	
+   - 마크다운 에디터
+	 · 더 쉽게 사용할 수 있는 마크다운 에디터 사용해보기
+	 · simpleMDE(simplemde.com) SBB에 적용해보기
+   */

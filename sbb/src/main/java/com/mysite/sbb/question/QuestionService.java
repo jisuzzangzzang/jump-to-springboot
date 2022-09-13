@@ -55,13 +55,18 @@ public class QuestionService {
 		};
 	}
 
-	public Page<Question> getList(int page) { // 정수 타입의 페이지 번호를 입력 받아 해당 페이지의 질문 목록 리턴
+	public Page<Question> getList(int page, String kw) { // 정수 타입의 페이지 번호를 입력 받아 해당 페이지의 질문 목록 리턴
+														 // 검색어를 의미하는 매개변수 kw를 getList에 추가
 		List<Sort.Order> sorts = new ArrayList<>();
 		sorts.add(Sort.Order.desc("createDate")); // 가장 최근에 작성한 게시물이 가장 먼저 보이게
 		Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts)); // page는 조회할 번호의 번호, 10은 한 페이지에 보여줄 게시물의 갯수
 																	  // 3번째 파라미터로 Sort 객체 전달 -> 역순으로 조회
 																	  // 만약 작성일시 외 추가로 정렬조건이 필요한 경우 sorts 리스트에 추가
-		return this.questionRepository.findAll(pageable);
+		return this.questionRepository.findAllByKeyword(kw, pageable);
+		/* 
+		Specification<Question> spec = search(kw);	// kw 값으로 Specification 객체 생성
+		return this.questionRepository.findAll(spec, pageable); // findAll 메소드 호출 시 전달
+		*/
 	}
 	
 	public Question getQuestion(Integer id) {

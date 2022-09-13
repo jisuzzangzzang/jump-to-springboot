@@ -38,14 +38,19 @@ public class QuestionController {
     private final UserService userService;
     
     @RequestMapping("/list")			   // URL 맵핑 시 value 매개변수는 생략 가능
-    public String list(Model model, @RequestParam(value="page", defaultValue="0") int page) {
+    public String list(Model model, @RequestParam(value="page", defaultValue="0") int page, 
+    								@RequestParam(value="kw", defaultValue="") String kw) {
     							 // http://localhost:8080/question/list?page=0 처럼 GET 방식으로 요청된 URL에서
     						     // 페이지 값을 가져오기 위해 매개변수가 list 메소드에 추가됨
     							 // URL에 페이지 파라미터 page가 전달되지 않은 경우 디폴트 값으로 0이 되도록 설정
     							 // * 스프링 부트의 페이징은 첫 페이지 번호가 1이 아닌 0
-    	Page<Question> paging = this.questionService.getList(page);
+    					
+    							 // 검색어에 해당하는 kw 파라미터 추가, 디폴트 값으로 빈 문자열 설정
+    	Page<Question> paging = this.questionService.getList(page, kw);
         model.addAttribute("paging", paging); // 모델 객체에 값을 담아줌
    	    // Model 객체는 따로 생성할 필요 없이 컨트롤러 메소드의 매개변수로 지정하기만 하면, 자동으로 Model 객체를 생성함
+        model.addAttribute("kw", kw);
+        // 화면에서 입력한 검색어를 화면에 유지하기 위해 kw 값 저장
         return "question_list"; // 템플릿에서 값을 사용
     }
 
